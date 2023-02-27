@@ -1,9 +1,11 @@
 import datetime as dt
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 class CandlePlot:
-    def __init__(self, df):
+    def __init__(self, df, candles=True):
         self.df_plot = df.copy()
+        self.candles = candles
         self.create_candle_fig()
 
     def add_timestr(self):
@@ -11,19 +13,20 @@ class CandlePlot:
 
     def create_candle_fig(self):
         self.add_timestr()
-        self.fig = go.Figure()
-        self.fig.add_trace(go.Candlestick(
-            x = self.df_plot.sTime,
-            open = self.df_plot.mid_o,
-            high = self.df_plot.mid_h,
-            low = self.df_plot.mid_l,
-            close = self.df_plot.mid_c,
-            line = dict(width=1), opacity=1,
-            increasing_fillcolor = "#24A06B",
-            decreasing_fillcolor = "#CC2E3C",
-            increasing_line_color = "#2EC886",
-            decreasing_line_color = "#FF3A4C"
-        ))
+        self.fig = make_subplots(specs=[[{"secondary_y": True}]])
+        if self.candles == True:
+            self.fig.add_trace(go.Candlestick(
+                x = self.df_plot.sTime,
+                open = self.df_plot.mid_o,
+                high = self.df_plot.mid_h,
+                low = self.df_plot.mid_l,
+                close = self.df_plot.mid_c,
+                line = dict(width=1), opacity=1,
+                increasing_fillcolor = "#24A06B",
+                decreasing_fillcolor = "#CC2E3C",
+                increasing_line_color = "#2EC886",
+                decreasing_line_color = "#FF3A4C"
+            ))
 
     def update_layout(self, width, height, nticks):
         self.fig.update_yaxes(
@@ -44,7 +47,7 @@ class CandlePlot:
             font = dict(size=8, color="#e1e1e1")
         )
 
-    def add_traces(self, line_traces):
+    def add_traces(self, line_traces, is_sec=False):
         for t in line_traces:
             self.fig.add_trace(go.Scatter(
                 x = self.df_plot.sTime,
@@ -52,9 +55,10 @@ class CandlePlot:
                 line = dict(width=2),
                 line_shape = "spline",
                 name = t
-            ))
+            ), secondary_y=is_sec)
 
-    def show_plot(self, width=900, height=400, nticks=5, line_traces=[]):
+    def show_plot(self, width=900, height=400, nticks=5, line_traces=[], sec_traces=[]):
         self.add_traces(line_traces)
+        self.add_traces(sec_traces, is_sec=True)
         self.update_layout(width, height, nticks)
         self.fig.show()
