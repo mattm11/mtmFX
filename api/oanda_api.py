@@ -6,6 +6,7 @@ import constants.defs as defs
 from dateutil import parser
 from datetime import datetime as dt
 from infrastructure.instrument_collection import instrumentCollection as ic
+from models.open_trade import OpenTrade
 
 class OandaAPI:
     def __init__(self):
@@ -156,3 +157,17 @@ class OandaAPI:
             print(f"Failed to close {trade_id}")
 
         return ok
+    
+    def get_open_trade(self, trade_id):
+        url = f"accounts/{defs.ACCOUNT_ID}/trades/{trade_id}"
+        ok, response = self.make_request(url)
+
+        if ok == True and 'trade' in response:
+            return OpenTrade(response['trade'])
+        
+    def get_open_trades(self):
+        url = f"accounts/{defs.ACCOUNT_ID}/openTrades"
+        ok, response = self.make_request(url)
+
+        if ok == True and 'trades' in response:
+            return [OpenTrade(x) for x in response['trades']]
