@@ -1,13 +1,10 @@
 from api.oanda_api import OandaAPI
 from infrastructure.instrument_collection import instrumentCollection
-from simulation.ma_cross import run_ma_sim
-from simulation.ema_macd_mp import run_ema_macd
-from dateutil import parser
-from infrastructure.collect_data import run_collection
+from stream_example.streamer import run_streamer
+
 
 if __name__ == '__main__':
-    # api = OandaAPI()
+    api = OandaAPI()
     instrumentCollection.loadInstruments("./data")
-    # run_collection(instrumentCollection, api)
-    # run_ema_macd(instrumentCollection)
-    run_ema_macd(instrumentCollection)
+    run_streamer()
+
